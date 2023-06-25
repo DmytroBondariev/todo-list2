@@ -1,0 +1,50 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="task-list">
+        <h1>
+          Todo List
+          <a href="{% url 'todo:task-create' %}" class="btn btn-primary link-to-page">
+            Add New Task
+          </a>
+        </h1>
+        <table class="table">
+          {% for task in task_list %}
+              <tr>
+                  <p>
+                    <strong>{{ task.content }}</strong>
+                    {% if task.is_completed %}
+                    <span style="color: green">
+                      Done
+                      <form method="post" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="pk" value="{{ task.id }}">
+                        <input class="btn btn-secondary link-to-page" type="submit" value="Undo">
+                      </form>
+                    </span>
+                  {% else %}
+                    <span style="color: red">
+                      Not done
+                      <form method="post" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="pk" value="{{ task.id }}">
+                        <input class="btn btn-success link-to-page" type="submit" value="Complete">
+                      </form>
+                    </span>
+                  {% endif %}
+                  </p>
+                  <p>Created: {{ task.created_at }}{% if task.deadline %}<span style="color: darkred"> Deadline: {{ task.deadline }}</span>{% endif %}</p>
+                  <p>
+                    <span class="text-muted">Tags:</span>
+                    {% for tag in task.tags.all %}
+                      <span class="text-muted">{{ tag.name }}</span>
+                    {% endfor %}
+                    <a href="{% url 'todo:task-update' pk=task.pk %}">Update</a>
+                    <a href="{% url 'todo:task-delete' pk=task.pk %}">Delete</a>
+                  </p>
+             </tr>
+              <hr>
+          {% endfor %}
+        </table>
+    </div>
+{% endblock %}
