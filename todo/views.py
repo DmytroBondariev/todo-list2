@@ -5,6 +5,8 @@ from django.views import generic
 from todo.forms import TagForm, TaskForm
 from todo.models import Task, Tag
 
+from django.shortcuts import get_object_or_404
+
 
 class IndexView(generic.ListView):
     model = Task
@@ -15,11 +17,8 @@ class IndexView(generic.ListView):
     def post(self, request):
         pk = request.POST.get('pk')
 
-        task = Task.objects.get(id=pk)
-        if task.is_completed:
-            task.is_completed = False
-        else:
-            task.is_completed = True
+        task = get_object_or_404(Task, id=pk)
+        task.is_completed = not task.is_completed
         task.save()
 
         return HttpResponseRedirect(self.request.path)
